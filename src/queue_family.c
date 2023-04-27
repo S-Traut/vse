@@ -20,7 +20,7 @@ VseQueueFamilyIndices vse_queue_family_find(VkPhysicalDevice physical_device, Vk
 
         if(present_support == VK_TRUE) {
             indices.present_family.value = i;
-            indices.graphics_family.present = VK_TRUE;
+            indices.present_family.present = VK_TRUE;
         }
 
         if(queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT) {

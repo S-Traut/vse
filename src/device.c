@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <vulkan/vulkan_core.h>
 
 VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface) {
@@ -50,37 +51,47 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
         && vse_queue_family_iscomplete(indices);
 }
 
-VkDevice vse_device_create(VkPhysicalDevice physical_device, VkQueue graphics_queue, VkSurfaceKHR surface) {
+VkDevice vse_device_create(VseApp *vse_app) {
 
     VkDevice device;
 
     float queue_priority = 1.0f;
-    VseQueueFamilyIndices indices = vse_queue_family_find(physical_device, surface);
-    VkDeviceQueueCreateInfo queue_create_info = {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .queueFamilyIndex = indices.graphics_family.value,
-        .queueCount = 1,
-        .pQueuePriorities = &queue_priority,
-    };
+    VseQueueFamilyIndices indices = vse_queue_family_find(vse_app->vk_physical_device, vse_app->vk_surface);
+
+    // Could be dynamically improved,
+    // Right now it's just a basic hard codded solution.
+    VkDeviceQueueCreateInfo queue_create_infos[2];
+    uint32_t unique_queues[2] = { indices.graphics_family.value, indices.present_family.value };
+
+    for(uint32_t i = 0; i < 2; i++) {
+        VkDeviceQueueCreateInfo queue_create_info = {
+            .sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+            .queueFamilyIndex = unique_queues[i],
+            .queueCount = 1,
+            .pQueuePriorities = &queue_priority,
+        };
+        queue_create_infos[i] = queue_create_info;
+    }
 
     VkPhysicalDeviceFeatures device_features = {}; 
     VkDeviceCreateInfo create_info = {
         .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .pQueueCreateInfos = &queue_create_info,
-        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = queue_create_infos,
+        .queueCreateInfoCount = 2,
         .pEnabledFeatures = &device_features,
         .enabledExtensionCount = 0,
         .enabledLayerCount = VALIDATION_LAYERS_COUNT,
         .ppEnabledLayerNames = VALIDATION_LAYERS,
     };
 
-    VkResult create_device_result = vkCreateDevice(physical_device, &create_info, NULL, &device);
+    VkResult create_device_result = vkCreateDevice(vse_app->vk_physical_device, &create_info, NULL, &device);
     if(create_device_result != VK_SUCCESS) {
         vse_err("Failed to create logical device.");
         exit(EXIT_FAILURE);
     }
 
-    vkGetDeviceQueue(device, indices.graphics_family.value, 0, &graphics_queue);
+    vkGetDeviceQueue(device, indices.graphics_family.value, 0, &vse_app->vk_graphics_queue);
+    vkGetDeviceQueue(device, indices.present_family.value, 0, &vse_app->vk_present_queue);
 
     vse_info("Created logical device.");
 

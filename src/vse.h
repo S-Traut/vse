@@ -34,6 +34,7 @@ typedef struct {
     VkPhysicalDevice vk_physical_device;
     VkDevice vk_device;
     VkQueue vk_graphics_queue;
+    VkQueue vk_present_queue;
     VkSurfaceKHR vk_surface;
 } VseApp;
 
@@ -52,7 +53,7 @@ VkInstance vse_instance_create(VseAppConfig config);
 
 VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface);
 VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surface);
-VkDevice vse_device_create(VkPhysicalDevice physical_device, VkQueue graphics_queue, VkSurfaceKHR surface);
+VkDevice vse_device_create(VseApp *vse_app);
 
 VkBool32 vse_validation_layer_check_support();
 

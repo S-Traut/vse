@@ -14,7 +14,7 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
 
     vse_logger_physical_devices(vse_app.vk_instance);
     vse_app.vk_physical_device = vse_device_pick(vse_app.vk_instance, vse_app.vk_surface);
-    vse_app.vk_device = vse_device_create(vse_app.vk_physical_device, vse_app.vk_graphics_queue, vse_app.vk_surface);
+    vse_app.vk_device = vse_device_create(&vse_app);
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
