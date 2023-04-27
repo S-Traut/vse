@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <vulkan/vulkan_core.h>
 
@@ -28,6 +29,7 @@ VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface) {
 
         if(physical_device == VK_NULL_HANDLE) {
             vse_err("No suitable device found.");
+            free(physical_devices);
             exit(EXIT_FAILURE);
         }
     }
@@ -48,7 +50,8 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
 
     return device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU 
         && device_features.geometryShader 
-        && vse_queue_family_iscomplete(indices);
+        && vse_queue_family_iscomplete(indices)
+        && vse_device_check_extension_support(physical_device);
 }
 
 VkDevice vse_device_create(VseApp *vse_app) {
@@ -79,7 +82,8 @@ VkDevice vse_device_create(VseApp *vse_app) {
         .pQueueCreateInfos = queue_create_infos,
         .queueCreateInfoCount = 2,
         .pEnabledFeatures = &device_features,
-        .enabledExtensionCount = 0,
+        .ppEnabledExtensionNames = DEVICE_EXTENSIONS,
+        .enabledExtensionCount = DEVICE_EXTENSIONS_COUNT,
         .enabledLayerCount = VALIDATION_LAYERS_COUNT,
         .ppEnabledLayerNames = VALIDATION_LAYERS,
     };
@@ -96,4 +100,31 @@ VkDevice vse_device_create(VseApp *vse_app) {
     vse_info("Created logical device.");
 
     return device;
+}
+
+VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device) {
+
+    uint32_t extension_count;
+    vkEnumerateDeviceExtensionProperties(physical_device, NULL, &extension_count, NULL);
+    VkExtensionProperties *available_extensions = malloc(sizeof(VkExtensionProperties) * extension_count);
+    vkEnumerateDeviceExtensionProperties(physical_device, NULL, &extension_count, available_extensions);
+
+    for(uint32_t i = 0; i < DEVICE_EXTENSIONS_COUNT; i++) {
+        VkBool32 found = VK_FALSE;
+
+        for(uint32_t j = 0; j < extension_count; j++) {
+            if(strcmp(DEVICE_EXTENSIONS[i], available_extensions[j].extensionName) == 0) {
+                found = VK_TRUE;
+                break;
+            }
+        }
+        
+        if(found == VK_FALSE) {
+            free(available_extensions);
+            return VK_FALSE;
+        }
+    }
+
+    free(available_extensions);
+    return VK_TRUE;
 }

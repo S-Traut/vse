@@ -18,6 +18,11 @@ static const char* VALIDATION_LAYERS[] = {
     "VK_LAYER_KHRONOS_validation"
 };
 
+static const uint32_t DEVICE_EXTENSIONS_COUNT = 1;
+static const char* DEVICE_EXTENSIONS[] = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
 #define vse_optional(type) struct { VkBool32 present; type value; }
 typedef vse_optional(uint32_t) uint32_o;
 
@@ -43,6 +48,11 @@ typedef struct {
     uint32_o present_family;
 } VseQueueFamilyIndices;
 
+typedef struct {
+    VkSurfaceCapabilitiesKHR capabilities;
+    VkSurfaceFormatKHR *formats;
+    VkPresentModeKHR *present_modes;
+} SwapchainSupportDetails;
 
 GLFWwindow* vse_window_create(VseAppConfig vse_app_config);
 
@@ -54,14 +64,17 @@ VkInstance vse_instance_create(VseAppConfig config);
 VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface);
 VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 VkDevice vse_device_create(VseApp *vse_app);
+VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device);
+
+SwapchainSupportDetails vse_swapchain_query_support(VseApp *vse_app);
 
 VkBool32 vse_validation_layer_check_support();
+void vse_swapchain_support_detail_destroy(SwapchainSupportDetails *swapchain_support_details);
 
 VseQueueFamilyIndices vse_queue_family_find(VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 VkBool32 vse_queue_family_iscomplete(VseQueueFamilyIndices queue_family);
 
 void vse_surface_set(VseApp *vse_app);
-
 
 void vse_logger_extensions();
 void vse_logger_physical_devices(VkInstance instance);
