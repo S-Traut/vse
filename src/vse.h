@@ -46,6 +46,9 @@ typedef struct {
     VkQueue vk_present_queue;
     VkSurfaceKHR vk_surface;
     VkSwapchainKHR vk_swapchain;
+    VkImage *swapchain_images;
+    VkFormat swapchain_image_format;
+    VkExtent2D swapchain_extent;
 } VseApp;
 
 typedef struct {

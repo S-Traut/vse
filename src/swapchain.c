@@ -134,6 +134,13 @@ VkSwapchainKHR vse_swapchain_create(VseApp *vse_app) {
         exit(EXIT_FAILURE);
     }
 
+    vkGetSwapchainImagesKHR(vse_app->vk_device, swapchain, &image_count, NULL);
+    vse_app->swapchain_images = malloc(sizeof(VkImage) * image_count);
+    vkGetSwapchainImagesKHR(vse_app->vk_device, swapchain, &image_count, vse_app->swapchain_images);
+
+    vse_app->swapchain_image_format = surface_format.format;
+    vse_app->swapchain_extent = extent;
+
     vse_info("Created swapchain.");
     return swapchain;
 }
