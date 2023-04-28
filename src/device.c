@@ -58,6 +58,7 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
         swapchain_support_details.present_mode_count > 0;
     }
 
+    vse_swapchain_support_details_destroy(&swapchain_support_details);
     return device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU 
         && device_features.geometryShader 
         && vse_queue_family_iscomplete(indices)

@@ -73,6 +73,7 @@ VkDevice vse_device_create(VseApp *vse_app);
 VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device);
 
 void vse_swapchain_query_support(VseSwapchainSupportDetails *swapchain_support_details, VkPhysicalDevice physical_device, VkSurfaceKHR surface);
+void vse_swapchain_support_details_destroy(VseSwapchainSupportDetails *swapchain_support_details);
 
 VkBool32 vse_validation_layer_check_support();
 
