@@ -16,6 +16,8 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     vse_app.vk_physical_device = vse_device_pick(vse_app.vk_instance, vse_app.vk_surface);
     vse_app.vk_device = vse_device_create(&vse_app);
 
+    vse_app.vk_swapchain = vse_swapchain_create(&vse_app);
+
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
     return p_vse_app;
@@ -36,6 +38,7 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
+    vkDestroySwapchainKHR(vse_app->vk_device, vse_app->vk_swapchain, NULL);
     vkDestroyDevice(vse_app->vk_device, NULL);
     vkDestroySurfaceKHR(vse_app->vk_instance, vse_app->vk_surface, NULL);
     vkDestroyInstance(vse_app->vk_instance, NULL);

@@ -12,6 +12,10 @@ void vse_err(const char* message) {
     printf("[E] %s\n", message);
 }
 
+void vse_warn(const char* message) {
+    printf("[W] %s\n", message);
+}
+
 void vse_logger_extensions() {
 
 	uint32_t extensions_count = 0;

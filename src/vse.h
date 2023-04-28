@@ -45,6 +45,7 @@ typedef struct {
     VkQueue vk_graphics_queue;
     VkQueue vk_present_queue;
     VkSurfaceKHR vk_surface;
+    VkSwapchainKHR vk_swapchain;
 } VseApp;
 
 typedef struct {
@@ -74,6 +75,10 @@ VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device);
 
 void vse_swapchain_query_support(VseSwapchainSupportDetails *swapchain_support_details, VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 void vse_swapchain_support_details_destroy(VseSwapchainSupportDetails *swapchain_support_details);
+VkSurfaceFormatKHR vse_swapchain_pick_format(VkSurfaceFormatKHR *available_formats, uint32_t available_formats_count);
+VkPresentModeKHR vse_swapchain_pick_present_mode(VkPresentModeKHR *available_present_modes, uint32_t available_present_modes_count);
+VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR capabilities);
+VkSwapchainKHR vse_swapchain_create(VseApp *app);
 
 VkBool32 vse_validation_layer_check_support();
 
@@ -85,6 +90,7 @@ void vse_surface_set(VseApp *vse_app);
 void vse_logger_extensions();
 void vse_logger_physical_devices(VkInstance instance);
 void vse_info(const char* message);
+void vse_warn(const char* message);
 void vse_err(const char* message);
 
 
