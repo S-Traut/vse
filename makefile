@@ -9,6 +9,8 @@ debug: FLAGS += -g
 debug: build
 
 %.o: $(SRC)/%.c
+	@mkdir -p build
+	@mkdir -p build/obj
 	$(CC) $(FLAGS) -I$(SRC) -c $< -o $(OBJ)/$@
 
 run: build
