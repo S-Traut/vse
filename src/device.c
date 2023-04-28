@@ -46,12 +46,22 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
     vkGetPhysicalDeviceProperties(physical_device, &device_properties);
     vkGetPhysicalDeviceFeatures(physical_device, &device_features);
 
+    VkBool32 extension_support = vse_device_check_extension_support(physical_device);    
+
     VseQueueFamilyIndices indices = vse_queue_family_find(physical_device, surface);
+
+    VseSwapchainSupportDetails swapchain_support_details;
+    vse_swapchain_query_support(&swapchain_support_details, physical_device, surface);
+    VkBool32 swapchain_adequate = VK_FALSE;
+    if(extension_support) {
+        swapchain_adequate = swapchain_support_details.format_count > 0 && 
+        swapchain_support_details.present_mode_count > 0;
+    }
 
     return device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU 
         && device_features.geometryShader 
         && vse_queue_family_iscomplete(indices)
-        && vse_device_check_extension_support(physical_device);
+        && extension_support;
 }
 
 VkDevice vse_device_create(VseApp *vse_app) {

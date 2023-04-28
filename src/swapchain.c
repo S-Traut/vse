@@ -1,26 +1,34 @@
 #include "vse.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vulkan/vulkan_core.h>
 
 // TODO
 // Find a way to generate the details in a clean way without having to malloc weird stuff
-SwapchainSupportDetails vse_swapchain_query_support(VseApp *vse_app) {
-    SwapchainSupportDetails swapchain_support_details;
+void vse_swapchain_query_support(VseSwapchainSupportDetails *swapchain_support_details, VkPhysicalDevice physical_device, VkSurfaceKHR surface) {
 
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-        vse_app->vk_physical_device, 
-        vse_app->vk_surface, 
-        &swapchain_support_details.capabilities
+        physical_device, 
+        surface, 
+        &swapchain_support_details->capabilities
     );
 
-    uint32_t format_count;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(vse_app->vk_physical_device, vse_app->vk_surface, &format_count, NULL);
+    uint32_t format_count = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count, NULL);
     if(format_count != 0) {
-        VkSurfaceFormatKHR *p_formats = malloc(sizeof(VkSurfaceFormatKHR) * format_count);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(vse_app->vk_physical_device, vse_app->vk_surface, &format_count, p_formats);
-        memcpy(swapchain_support_details.formats, p_formats, sizeof(VkSurfaceFormatKHR) * format_count);
+        VkSurfaceFormatKHR formats[format_count];
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count, formats);
+        memcpy(swapchain_support_details->formats, formats, sizeof(VkSurfaceFormatKHR) * format_count);
     }
+    swapchain_support_details->format_count = format_count;
 
-    return swapchain_support_details; 
+    uint32_t present_mode_count = 0;
+    vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &present_mode_count, NULL);
+    if(present_mode_count != 0) {
+        VkPresentModeKHR present_modes[present_mode_count];
+        vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, surface, &present_mode_count, present_modes);
+        memcpy(swapchain_support_details->present_modes, present_modes, sizeof(VkPresentModeKHR) * present_mode_count);
+    }
+    swapchain_support_details->present_mode_count = present_mode_count;
 }

@@ -24,6 +24,10 @@ static const char* DEVICE_EXTENSIONS[] = {
 };
 
 #define vse_optional(type) struct { VkBool32 present; type value; }
+
+///
+/// Optional uint32_t type that can be used to be either present or not.
+///
 typedef vse_optional(uint32_t) uint32_o;
 
 typedef struct {
@@ -50,9 +54,11 @@ typedef struct {
 
 typedef struct {
     VkSurfaceCapabilitiesKHR capabilities;
+    uint32_t format_count;
     VkSurfaceFormatKHR *formats;
+    uint32_t present_mode_count;
     VkPresentModeKHR *present_modes;
-} SwapchainSupportDetails;
+} VseSwapchainSupportDetails;
 
 GLFWwindow* vse_window_create(VseAppConfig vse_app_config);
 
@@ -66,10 +72,9 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
 VkDevice vse_device_create(VseApp *vse_app);
 VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device);
 
-SwapchainSupportDetails vse_swapchain_query_support(VseApp *vse_app);
+void vse_swapchain_query_support(VseSwapchainSupportDetails *swapchain_support_details, VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 
 VkBool32 vse_validation_layer_check_support();
-void vse_swapchain_support_detail_destroy(SwapchainSupportDetails *swapchain_support_details);
 
 VseQueueFamilyIndices vse_queue_family_find(VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 VkBool32 vse_queue_family_iscomplete(VseQueueFamilyIndices queue_family);
