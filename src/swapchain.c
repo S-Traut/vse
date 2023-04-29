@@ -144,3 +144,33 @@ VkSwapchainKHR vse_swapchain_create(VseApp *vse_app) {
     vse_info("Created swapchain.");
     return swapchain;
 }
+
+VkImageView *vse_swapchain_create_image_views(VseApp app) {
+
+    VkImageView *image_views = malloc(sizeof(VkImageView) * app.swapchain_image_count);
+
+    for(uint32_t i = 0; i < app.swapchain_image_count; i++) {
+        VkImageViewCreateInfo create_info = {
+            .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .image = app.swapchain_images[i],
+            .viewType = VK_IMAGE_VIEW_TYPE_2D,
+            .format = app.swapchain_image_format,
+            .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .components.a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            .subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+            .subresourceRange.baseMipLevel = 0,
+            .subresourceRange.levelCount = 1,
+            .subresourceRange.baseArrayLayer = 0,
+            .subresourceRange.layerCount = 1,
+        };
+
+        VkResult create_image_view_result = vkCreateImageView(app.vk_device, &create_info, NULL, &image_views[i]);
+        if(create_image_view_result != VK_SUCCESS) {
+            vse_err("Failed to create image view.");
+        }
+    }
+
+    return image_views;
+}

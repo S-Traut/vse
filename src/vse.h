@@ -46,9 +46,11 @@ typedef struct {
     VkQueue vk_present_queue;
     VkSurfaceKHR vk_surface;
     VkSwapchainKHR vk_swapchain;
+    uint32_t swapchain_image_count;
     VkImage *swapchain_images;
     VkFormat swapchain_image_format;
     VkExtent2D swapchain_extent;
+    VkImageView *swapchain_image_views;
 } VseApp;
 
 typedef struct {
@@ -82,6 +84,7 @@ VkSurfaceFormatKHR vse_swapchain_pick_format(VkSurfaceFormatKHR *available_forma
 VkPresentModeKHR vse_swapchain_pick_present_mode(VkPresentModeKHR *available_present_modes, uint32_t available_present_modes_count);
 VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR capabilities);
 VkSwapchainKHR vse_swapchain_create(VseApp *app);
+VkImageView *vse_swapchain_create_image_views(VseApp app);
 
 VkBool32 vse_validation_layer_check_support();
 

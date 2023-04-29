@@ -47,7 +47,6 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
     vkGetPhysicalDeviceFeatures(physical_device, &device_features);
 
     VkBool32 extension_support = vse_device_check_extension_support(physical_device);    
-
     VseQueueFamilyIndices indices = vse_queue_family_find(physical_device, surface);
 
     VseSwapchainSupportDetails swapchain_support_details;

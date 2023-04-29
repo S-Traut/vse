@@ -1,4 +1,5 @@
 #include "vse.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vulkan/vulkan_core.h>
@@ -16,6 +17,7 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     vse_app.vk_physical_device = vse_device_pick(vse_app.vk_instance, vse_app.vk_surface);
     vse_app.vk_device = vse_device_create(&vse_app);
     vse_app.vk_swapchain = vse_swapchain_create(&vse_app);
+    vse_app.swapchain_image_views = vse_swapchain_create_image_views(vse_app);
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
@@ -37,6 +39,10 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
+    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++)
+        vkDestroyImageView(vse_app->vk_device, vse_app->swapchain_image_views[i], NULL);
+    free(vse_app->swapchain_image_views);
+    
     free(vse_app->swapchain_images);
     vkDestroySwapchainKHR(vse_app->vk_device, vse_app->vk_swapchain, NULL);
     vkDestroyDevice(vse_app->vk_device, NULL);
