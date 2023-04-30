@@ -172,5 +172,6 @@ VkImageView *vse_swapchain_create_image_views(VseApp app) {
         }
     }
 
+    vse_info("Created image views.");
     return image_views;
 }

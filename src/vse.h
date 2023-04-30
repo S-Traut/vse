@@ -1,6 +1,7 @@
 #ifndef VSE_H
 #define VSE_H
 
+#include "vse_file.h"
 #include <stddef.h>
 
 #define VK_USE_PLATFORM_XCB_KHR
@@ -85,6 +86,10 @@ VkPresentModeKHR vse_swapchain_pick_present_mode(VkPresentModeKHR *available_pre
 VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR capabilities);
 VkSwapchainKHR vse_swapchain_create(VseApp *app);
 VkImageView *vse_swapchain_create_image_views(VseApp app);
+
+void vse_pipeline_create(VseApp app);
+
+VkShaderModule vse_shadermod_create(VkDevice device, VseFile file);
 
 VkBool32 vse_validation_layer_check_support();
 

@@ -18,6 +18,8 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     vse_app.vk_device = vse_device_create(&vse_app);
     vse_app.vk_swapchain = vse_swapchain_create(&vse_app);
     vse_app.swapchain_image_views = vse_swapchain_create_image_views(vse_app);
+    
+    vse_pipeline_create(vse_app);
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
