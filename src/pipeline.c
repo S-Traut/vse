@@ -4,8 +4,8 @@
 
 void vse_pipeline_create(VseApp app) {
 
-    VseFile vert_shader_file = vse_file_read("shaders/shader.vert");
-    VseFile frag_shader_file = vse_file_read("shaders/shader.frag");
+    VseFile vert_shader_file = vse_file_read("build/shaders/frag.spv");
+    VseFile frag_shader_file = vse_file_read("build/shaders/vert.spv");
     VkShaderModule vert_shader_module = vse_shadermod_create(app.vk_device, vert_shader_file);
     VkShaderModule frag_shader_module = vse_shadermod_create(app.vk_device, frag_shader_file);
 

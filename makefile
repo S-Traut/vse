@@ -22,5 +22,5 @@ build: $(SOURCES) buildshaders
 	gcc $(FLAGS) -Isrc/ $(OBJECTS) -o build/app
 
 buildshaders:
-	glslc shaders/shader.vert -o $(SHD)/vert.svp
-	glslc shaders/shader.frag -o $(SHD)/frag.svp
+	glslc shaders/shader.vert -o $(SHD)/vert.spv
+	glslc shaders/shader.frag -o $(SHD)/frag.spv
