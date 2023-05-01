@@ -10,7 +10,6 @@ debug: FLAGS += -g
 debug: build
 
 %.o: $(SRC)/%.c
-	@mkdir -p build
 	@mkdir -p $(OBJ)
 	@mkdir -p $(SHD)
 	$(CC) $(FLAGS) -I$(SRC) -c $< -o $(OBJ)/$@

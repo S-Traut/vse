@@ -52,6 +52,7 @@ typedef struct {
     VkFormat swapchain_image_format;
     VkExtent2D swapchain_extent;
     VkImageView *swapchain_image_views;
+    VkPipelineLayout pipeline_layout;
 } VseApp;
 
 typedef struct {
@@ -87,7 +88,7 @@ VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabili
 VkSwapchainKHR vse_swapchain_create(VseApp *app);
 VkImageView *vse_swapchain_create_image_views(VseApp app);
 
-void vse_pipeline_create(VseApp app);
+void vse_pipeline_create(VseApp *vse_app);
 
 VkShaderModule vse_shadermod_create(VkDevice device, VseFile file);
 
