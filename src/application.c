@@ -42,6 +42,7 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
+    vkDestroyPipeline(vse_app->vk_device, vse_app->pipeline, NULL);
     vkDestroyPipelineLayout(vse_app->vk_device, vse_app->pipeline_layout, NULL);
     vkDestroyRenderPass(vse_app->vk_device, vse_app->render_pass, NULL);
 

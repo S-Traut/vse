@@ -5,8 +5,8 @@
 
 void vse_pipeline_create(VseApp *vse_app) {
 
-    VseFile vert_shader_file = vse_file_read("build/shaders/frag.spv");
-    VseFile frag_shader_file = vse_file_read("build/shaders/vert.spv");
+    VseFile vert_shader_file = vse_file_read("build/shaders/vert.spv");
+    VseFile frag_shader_file = vse_file_read("build/shaders/frag.spv");
     VkShaderModule vert_shader_module = vse_shadermod_create(vse_app->vk_device, vert_shader_file);
     VkShaderModule frag_shader_module = vse_shadermod_create(vse_app->vk_device, frag_shader_file);
 
@@ -140,8 +140,6 @@ void vse_pipeline_create(VseApp *vse_app) {
     // PIEPLINE LAYOUT
     //////////////////////
 
-    VkPipelineLayout pipeline_layout;
-
     VkPipelineLayoutCreateInfo pipeline_layout_info = {
         .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         .setLayoutCount = 0,
@@ -150,13 +148,37 @@ void vse_pipeline_create(VseApp *vse_app) {
         .pPushConstantRanges = NULL,
     };
 
-    VkResult create_pipeline_layout_result = vkCreatePipelineLayout(vse_app->vk_device, &pipeline_layout_info, NULL, &pipeline_layout);
+    VkResult create_pipeline_layout_result = vkCreatePipelineLayout(vse_app->vk_device, &pipeline_layout_info, NULL, &vse_app->pipeline_layout);
     if(create_pipeline_layout_result != VK_SUCCESS) {
         vse_err("Failed to create pipeline layout.");
         exit(EXIT_FAILURE);
     }
 
-    vse_app->pipeline_layout = pipeline_layout;
+    VkGraphicsPipelineCreateInfo pipeline_info = {
+        .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
+        .stageCount = 2,
+        .pStages = shader_stages,
+        .pVertexInputState = &vertex_input_info,
+        .pInputAssemblyState = &input_assembly_info,
+        .pViewportState = &viewport_state_info,
+        .pRasterizationState = &rasterizer,
+        .pMultisampleState = &multisampling,
+        .pDepthStencilState = NULL,
+        .pColorBlendState = &color_blending,
+        .pDynamicState = &dynamic_state_info,
+        .layout = vse_app->pipeline_layout,
+        .renderPass = vse_app->render_pass,
+        .subpass = 0,
+        .basePipelineHandle = VK_NULL_HANDLE,
+        .basePipelineIndex = -1,
+    }; 
+
+    VkResult create_graphics_pipeline_result = vkCreateGraphicsPipelines(vse_app->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vse_app->pipeline);
+    if(create_graphics_pipeline_result != VK_SUCCESS) {
+        vse_err("Failed to create pipeline.");
+        exit(EXIT_FAILURE);
+    }
+
     vse_info("Created pipeline.");
 
     vse_file_destroy(vert_shader_file);
