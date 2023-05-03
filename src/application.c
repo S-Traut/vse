@@ -19,6 +19,7 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     vse_app.vk_swapchain = vse_swapchain_create(&vse_app);
     vse_app.swapchain_image_views = vse_swapchain_create_image_views(vse_app);
     
+    vse_renderpass_create(&vse_app);
     vse_pipeline_create(&vse_app);
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
@@ -42,6 +43,7 @@ void vse_app_run(VseAppConfig vse_app_config) {
 void vse_app_destroy(VseApp* vse_app)
 {
     vkDestroyPipelineLayout(vse_app->vk_device, vse_app->pipeline_layout, NULL);
+    vkDestroyRenderPass(vse_app->vk_device, vse_app->render_pass, NULL);
 
     for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++)
         vkDestroyImageView(vse_app->vk_device, vse_app->swapchain_image_views[i], NULL);
