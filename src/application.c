@@ -21,10 +21,19 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     
     vse_renderpass_create(&vse_app);
     vse_pipeline_create(&vse_app);
+    vse_framebuffer_create(&vse_app);
+    vse_command_pool_create(&vse_app);
+    vse_command_buffer_create(&vse_app);
+    vse_syncobj_create(&vse_app);
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
     return p_vse_app;
+}
+
+// TO BE CHANGED TO FUNCTION POINTER IN THE APP CONFIG
+void draw_frame(VseApp *vse_app) {
+
 }
 
 void vse_app_run(VseAppConfig vse_app_config) {
@@ -32,6 +41,7 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
     while(!glfwWindowShouldClose(app->window)) {
         glfwPollEvents(); 
+        draw_frame(app);
 
         if(glfwGetKey(app->window, GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(app->window, GLFW_TRUE);
@@ -42,6 +52,16 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
+    vkDestroySemaphore(vse_app->vk_device, vse_app->semaphore_image_available, NULL);
+    vkDestroySemaphore(vse_app->vk_device, vse_app->semaphore_render_finished, NULL);
+    vkDestroyFence(vse_app->vk_device, vse_app->fence_inflight, NULL);
+
+    vkDestroyCommandPool(vse_app->vk_device, vse_app->command_pool, NULL);
+    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++) {
+        vkDestroyFramebuffer(vse_app->vk_device, vse_app->frame_buffers[i], NULL);
+    }
+    free(vse_app->frame_buffers);
+
     vkDestroyPipeline(vse_app->vk_device, vse_app->pipeline, NULL);
     vkDestroyPipelineLayout(vse_app->vk_device, vse_app->pipeline_layout, NULL);
     vkDestroyRenderPass(vse_app->vk_device, vse_app->render_pass, NULL);

@@ -3,7 +3,7 @@ CC := gcc
 SRC := src
 OBJ := build/obj
 SHD := build/shaders
-SOURCES = application.o instance.o window.o logger.o device.o validation.o queue_family.o surface.o swapchain.o vse_math.o pipeline.o vse_file.o shader_module.o render_pass.o main.o
+SOURCES = application.o instance.o window.o logger.o device.o validation.o queue_family.o surface.o swapchain.o vse_math.o pipeline.o vse_file.o shader_module.o render_pass.o framebuffer.o command.o syncronization_objects.o main.o
 OBJECTS = $(addprefix build/obj/, $(SOURCES))
 
 debug: FLAGS += -g

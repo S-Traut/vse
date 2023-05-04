@@ -55,6 +55,12 @@ typedef struct {
     VkRenderPass render_pass;
     VkPipelineLayout pipeline_layout;
     VkPipeline pipeline;
+    VkFramebuffer *frame_buffers;
+    VkCommandPool command_pool;
+    VkCommandBuffer command_buffer;
+    VkSemaphore semaphore_image_available;
+    VkSemaphore semaphore_render_finished;
+    VkFence fence_inflight;
 } VseApp;
 
 typedef struct {
@@ -93,6 +99,14 @@ VkImageView *vse_swapchain_create_image_views(VseApp app);
 void vse_pipeline_create(VseApp *vse_app);
 
 void vse_renderpass_create(VseApp *vse_app);
+
+void vse_framebuffer_create(VseApp *vse_app);
+
+void vse_command_pool_create(VseApp *vse_app);
+void vse_command_buffer_create(VseApp *vse_app);
+void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, uint32_t image_index);
+
+void vse_syncobj_create(VseApp *vse_app);
 
 VkShaderModule vse_shadermod_create(VkDevice device, VseFile file);
 
