@@ -43,7 +43,7 @@ void vse_command_buffer_create(VseApp *vse_app) {
 void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, uint32_t image_index) {
 
     VkCommandBufferBeginInfo begin_info = {
-        .sType = VK_STRUCTURE_TYPE_DEVICE_GROUP_COMMAND_BUFFER_BEGIN_INFO,
+        .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
         .flags = 0,
         .pInheritanceInfo = NULL,
     };
@@ -53,8 +53,6 @@ void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, u
         vse_err("Failed to begin recording command buffer.");
         exit(EXIT_FAILURE);
     }
-
-    vse_info("Recording command buffer...");
 
     VkRenderPassBeginInfo render_pass_info = {
         .sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
@@ -96,6 +94,4 @@ void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, u
         vse_err("Failed to end command buffer.");
         exit(EXIT_FAILURE);
     }
-
-    vse_info("End recording.");
 }

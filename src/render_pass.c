@@ -20,6 +20,15 @@ void vse_renderpass_create(VseApp *vse_app) {
         .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
     };
 
+    VkSubpassDependency dependency = {
+        .srcSubpass = VK_SUBPASS_EXTERNAL,
+        .dstSubpass = 0,
+        .srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .srcAccessMask = 0,
+        .dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+        .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+    };
+
     VkSubpassDescription sub_pass = {
         .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
         .colorAttachmentCount = 1,
@@ -32,6 +41,8 @@ void vse_renderpass_create(VseApp *vse_app) {
         .pAttachments = &color_attachment,
         .subpassCount = 1,
         .pSubpasses = &sub_pass,
+        .dependencyCount = 1,
+        .pDependencies = &dependency,
     };
 
     VkResult create_render_pass_result = vkCreateRenderPass(vse_app->vk_device, &render_pass_create_info, NULL, &vse_app->render_pass);

@@ -12,6 +12,7 @@ void vse_syncobj_create(VseApp *vse_app) {
 
     VkFenceCreateInfo fence_info = {
         .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+        .flags = VK_FENCE_CREATE_SIGNALED_BIT,
     };
     VkResult create_fence_result = vkCreateFence(vse_app->vk_device, &fence_info, NULL, &vse_app->fence_inflight);
 
