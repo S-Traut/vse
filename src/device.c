@@ -64,7 +64,7 @@ VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surf
         && extension_support;
 }
 
-VkDevice vse_device_create(VseApp *vse_app) {
+void vse_device_create(VseApp *vse_app) {
 
     VkDevice device;
 
