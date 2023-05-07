@@ -24,19 +24,23 @@ void vse_command_pool_create(VseApp *vse_app) {
 
 void vse_command_buffer_create(VseApp *vse_app) {
 
+    vse_app->command_buffer_count = MAX_FRAMES_IN_FLIGHT;
+    VkCommandBuffer *command_buffers = malloc(sizeof(VkCommandBuffer) * vse_app->command_buffer_count);
+
     VkCommandBufferAllocateInfo allocate_info = {
         .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
         .commandPool = vse_app->command_pool,
         .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-        .commandBufferCount = 1,
+        .commandBufferCount = vse_app->command_buffer_count,
     };
 
-    VkResult allocate_command_buffers_result = vkAllocateCommandBuffers(vse_app->vk_device, &allocate_info, &vse_app->command_buffer);
+    VkResult allocate_command_buffers_result = vkAllocateCommandBuffers(vse_app->vk_device, &allocate_info, command_buffers);
     if(allocate_command_buffers_result != VK_SUCCESS) {
         vse_err("Failed to allocate command buffers.");
         exit(EXIT_FAILURE);
     }
 
+    vse_app->command_buffers = command_buffers;
     vse_info("Allocated command buffers.");
 }
 
@@ -62,7 +66,7 @@ void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, u
         .renderArea.extent = vse_app.swapchain_extent, 
     };
     
-    VkClearValue clear_color = {{{ 0.1f, 0.1f, 0.1f, 1.0f }}};
+    VkClearValue clear_color = {{{ 0.01f, 0.01f, 0.01f, 1.0f }}};
     render_pass_info.clearValueCount = 1;
     render_pass_info.pClearValues = &clear_color;
 

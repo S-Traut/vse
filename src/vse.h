@@ -24,6 +24,8 @@ static const char* DEVICE_EXTENSIONS[] = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
+static const int MAX_FRAMES_IN_FLIGHT = 2;
+
 #define vse_optional(type) struct { VkBool32 present; type value; }
 
 ///
@@ -57,10 +59,12 @@ typedef struct {
     VkPipeline pipeline;
     VkFramebuffer *frame_buffers;
     VkCommandPool command_pool;
-    VkCommandBuffer command_buffer;
-    VkSemaphore semaphore_image_available;
-    VkSemaphore semaphore_render_finished;
-    VkFence fence_inflight;
+    uint32_t current_frame;
+    uint32_t command_buffer_count;
+    VkCommandBuffer *command_buffers;
+    VkSemaphore *semaphores_image_available;
+    VkSemaphore *semaphores_render_finished;
+    VkFence *fences_inflight;
 } VseApp;
 
 typedef struct {

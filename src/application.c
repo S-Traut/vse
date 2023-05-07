@@ -33,17 +33,20 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
 
 // TO BE CHANGED TO FUNCTION POINTER IN THE APP CONFIG
 void draw_frame(VseApp *vse_app) {
-    vkWaitForFences(vse_app->vk_device, 1, &vse_app->fence_inflight, VK_TRUE, UINT64_MAX);
-    vkResetFences(vse_app->vk_device, 1, &vse_app->fence_inflight);
+
+    uint32_t current_frame = vse_app->current_frame;
+
+    vkWaitForFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame], VK_TRUE, UINT64_MAX);
+    vkResetFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame]);
 
     uint32_t image_index;
-    vkAcquireNextImageKHR(vse_app->vk_device, vse_app->vk_swapchain, UINT64_MAX, vse_app->semaphore_image_available, VK_NULL_HANDLE, &image_index);
+    vkAcquireNextImageKHR(vse_app->vk_device, vse_app->vk_swapchain, UINT64_MAX, vse_app->semaphores_image_available[current_frame], VK_NULL_HANDLE, &image_index);
 
-    vkResetCommandBuffer(vse_app->command_buffer, 0);
-    vse_command_buffer_record(*vse_app, vse_app->command_buffer, image_index);
+    vkResetCommandBuffer(vse_app->command_buffers[current_frame], 0);
+    vse_command_buffer_record(*vse_app, vse_app->command_buffers[current_frame], image_index);
 
-    VkSemaphore wait_semaphores[] = { vse_app->semaphore_image_available };
-    VkSemaphore signal_semaphores[] = { vse_app->semaphore_render_finished };
+    VkSemaphore wait_semaphores[] = { vse_app->semaphores_image_available[current_frame] };
+    VkSemaphore signal_semaphores[] = { vse_app->semaphores_render_finished[current_frame] };
     VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
     VkSubmitInfo submit_info = {
@@ -52,12 +55,12 @@ void draw_frame(VseApp *vse_app) {
         .pWaitSemaphores = wait_semaphores,
         .pWaitDstStageMask = wait_stages,
         .commandBufferCount = 1,
-        .pCommandBuffers = &vse_app->command_buffer,
+        .pCommandBuffers = &vse_app->command_buffers[current_frame],
         .signalSemaphoreCount = 1,
         .pSignalSemaphores = signal_semaphores,
     };
 
-    VkResult queue_submit_result = vkQueueSubmit(vse_app->vk_graphics_queue, 1, &submit_info, vse_app->fence_inflight);
+    VkResult queue_submit_result = vkQueueSubmit(vse_app->vk_graphics_queue, 1, &submit_info, vse_app->fences_inflight[current_frame]);
     if(queue_submit_result != VK_SUCCESS) {
         vse_err("Failed to submit queue.");
         exit(EXIT_FAILURE);
@@ -75,6 +78,8 @@ void draw_frame(VseApp *vse_app) {
     };
 
     vkQueuePresentKHR(vse_app->vk_present_queue, &present_info);    
+    
+    vse_app->current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void vse_app_run(VseAppConfig vse_app_config) {
@@ -94,9 +99,15 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
-    vkDestroySemaphore(vse_app->vk_device, vse_app->semaphore_image_available, NULL);
-    vkDestroySemaphore(vse_app->vk_device, vse_app->semaphore_render_finished, NULL);
-    vkDestroyFence(vse_app->vk_device, vse_app->fence_inflight, NULL);
+    for(uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(vse_app->vk_device, vse_app->semaphores_image_available[i], NULL);
+        vkDestroySemaphore(vse_app->vk_device, vse_app->semaphores_render_finished[i], NULL);
+        vkDestroyFence(vse_app->vk_device, vse_app->fences_inflight[i], NULL);
+    }
+
+    free(vse_app->semaphores_image_available);
+    free(vse_app->semaphores_render_finished);
+    free(vse_app->command_buffers);
 
     vkDestroyCommandPool(vse_app->vk_device, vse_app->command_pool, NULL);
     for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++) {
