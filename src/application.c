@@ -9,22 +9,26 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
     vse_info("STARTING VSE APPLICATION");
 
     VseApp vse_app;
-    vse_app.window = vse_window_create(vse_app_config);
+
+    vse_window_create(vse_app_config, &vse_app);
     vse_app.vk_instance = vse_instance_create(vse_app_config);
     vse_surface_set(&vse_app);
 
     vse_logger_physical_devices(vse_app.vk_instance);
-    vse_app.vk_physical_device = vse_device_pick(vse_app.vk_instance, vse_app.vk_surface);
-    vse_app.vk_device = vse_device_create(&vse_app);
-    vse_app.vk_swapchain = vse_swapchain_create(&vse_app);
-    vse_app.swapchain_image_views = vse_swapchain_create_image_views(vse_app);
-    
+
+    vse_device_pick(&vse_app);
+    vse_device_create(&vse_app);
+    vse_swapchain_create(&vse_app);
+    vse_swapchain_create_image_views(&vse_app);
     vse_renderpass_create(&vse_app);
     vse_pipeline_create(&vse_app);
     vse_framebuffer_create(&vse_app);
     vse_command_pool_create(&vse_app);
     vse_command_buffer_create(&vse_app);
     vse_syncobj_create(&vse_app);
+
+    vse_app.framebuffer_resized = VK_FALSE;
+    vse_app.current_frame = 0;
 
     VseApp *p_vse_app = malloc(sizeof(VseApp));
     memcpy(p_vse_app, &vse_app, sizeof(VseApp));
@@ -36,11 +40,21 @@ void draw_frame(VseApp *vse_app) {
 
     uint32_t current_frame = vse_app->current_frame;
 
-    vkWaitForFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame], VK_TRUE, UINT64_MAX);
-    vkResetFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame]);
+    VkFence fences = vse_app->fences_inflight[current_frame];
+    vkWaitForFences(vse_app->vk_device, 1, &fences, VK_TRUE, UINT64_MAX);
 
     uint32_t image_index;
-    vkAcquireNextImageKHR(vse_app->vk_device, vse_app->vk_swapchain, UINT64_MAX, vse_app->semaphores_image_available[current_frame], VK_NULL_HANDLE, &image_index);
+    VkResult aquire_next_image_result = vkAcquireNextImageKHR(vse_app->vk_device, vse_app->vk_swapchain, UINT64_MAX, vse_app->semaphores_image_available[current_frame], VK_NULL_HANDLE, &image_index);
+    if(aquire_next_image_result == VK_ERROR_OUT_OF_DATE_KHR) {
+        vse_swapchain_recreate(vse_app);
+        return;
+    } else if(aquire_next_image_result != VK_SUCCESS && aquire_next_image_result != VK_SUBOPTIMAL_KHR) {
+        vse_err("Failed to acquire swapchain image.");
+        exit(EXIT_FAILURE);
+    }
+    
+    vkResetFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame]);
+
 
     vkResetCommandBuffer(vse_app->command_buffers[current_frame], 0);
     vse_command_buffer_record(*vse_app, vse_app->command_buffers[current_frame], image_index);
@@ -77,7 +91,17 @@ void draw_frame(VseApp *vse_app) {
         .pResults = NULL,
     };
 
-    vkQueuePresentKHR(vse_app->vk_present_queue, &present_info);    
+    VkResult queue_present_result = vkQueuePresentKHR(vse_app->vk_present_queue, &present_info);    
+
+    if(queue_present_result == VK_ERROR_OUT_OF_DATE_KHR 
+    || queue_present_result == VK_SUBOPTIMAL_KHR 
+    || vse_app->framebuffer_resized == VK_TRUE) {
+        vse_app->framebuffer_resized = VK_FALSE;
+        vse_swapchain_recreate(vse_app);
+    } else if(queue_present_result != VK_SUCCESS) {
+        vse_err("Failed to present swapchain image.");
+        exit(EXIT_FAILURE);
+    }
     
     vse_app->current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
 }

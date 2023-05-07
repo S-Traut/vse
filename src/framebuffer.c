@@ -1,4 +1,5 @@
 #include "vse.h"
+#include <GLFW/glfw3.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <vulkan/vulkan_core.h>
@@ -32,4 +33,9 @@ void vse_framebuffer_create(VseApp *vse_app) {
 
     vse_app->frame_buffers = p_framebuffers;
     vse_info("Created framebuffers.");
+}
+
+void vse_framebuffer_resize_callback(GLFWwindow *window, int width, int height) {
+    VseApp *vse_app = (VseApp*) glfwGetWindowUserPointer(window);
+    vse_app->framebuffer_resized = VK_TRUE;
 }

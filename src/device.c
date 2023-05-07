@@ -6,12 +6,12 @@
 #include <sys/types.h>
 #include <vulkan/vulkan_core.h>
 
-VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface) {
+void vse_device_pick(VseApp *vse_app) {
 
     VkPhysicalDevice physical_device = VK_NULL_HANDLE;
 
     uint32_t devices_count = 0;
-    vkEnumeratePhysicalDevices(instance, &devices_count, NULL);
+    vkEnumeratePhysicalDevices(vse_app->vk_instance, &devices_count, NULL);
 
     if(devices_count == 0) {
         vse_err("No device supporting Vulkan found.");
@@ -19,10 +19,10 @@ VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface) {
     }
 
     VkPhysicalDevice *physical_devices = malloc(sizeof(VkPhysicalDevice) *devices_count);
-    vkEnumeratePhysicalDevices(instance, &devices_count, physical_devices);
+    vkEnumeratePhysicalDevices(vse_app->vk_instance, &devices_count, physical_devices);
 
     for(uint32_t i = 0; i < devices_count; i++) {
-        if(vse_device_suitable(physical_devices[i], surface) == VK_TRUE) {
+        if(vse_device_suitable(physical_devices[i], vse_app->vk_surface) == VK_TRUE) {
             physical_device = physical_devices[i];
             break;
         }
@@ -36,7 +36,7 @@ VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface) {
 
     free(physical_devices);
     vse_info("Picked physical device");
-    return physical_device;
+    vse_app->vk_physical_device = physical_device;
 }
 
 VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surface) {
@@ -109,7 +109,7 @@ VkDevice vse_device_create(VseApp *vse_app) {
 
     vse_info("Created logical device.");
 
-    return device;
+    vse_app->vk_device = device;
 }
 
 VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device) {

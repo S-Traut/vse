@@ -65,6 +65,7 @@ typedef struct {
     VkSemaphore *semaphores_image_available;
     VkSemaphore *semaphores_render_finished;
     VkFence *fences_inflight;
+    VkBool32 framebuffer_resized;
 } VseApp;
 
 typedef struct {
@@ -80,14 +81,14 @@ typedef struct {
     VkPresentModeKHR *present_modes;
 } VseSwapchainSupportDetails;
 
-GLFWwindow* vse_window_create(VseAppConfig vse_app_config);
+void vse_window_create(VseAppConfig vse_app_config, VseApp *vse_app);
 
 void vse_app_run(VseAppConfig vse_app_config);
 void vse_app_destroy(VseApp *vse_app); 
 
 VkInstance vse_instance_create(VseAppConfig config);
 
-VkPhysicalDevice vse_device_pick(VkInstance instance, VkSurfaceKHR surface);
+void vse_device_pick(VseApp *vse_app);
 VkBool32 vse_device_suitable(VkPhysicalDevice physical_device, VkSurfaceKHR surface);
 VkDevice vse_device_create(VseApp *vse_app);
 VkBool32 vse_device_check_extension_support(VkPhysicalDevice physical_device);
@@ -97,8 +98,8 @@ void vse_swapchain_support_details_destroy(VseSwapchainSupportDetails *swapchain
 VkSurfaceFormatKHR vse_swapchain_pick_format(VkSurfaceFormatKHR *available_formats, uint32_t available_formats_count);
 VkPresentModeKHR vse_swapchain_pick_present_mode(VkPresentModeKHR *available_present_modes, uint32_t available_present_modes_count);
 VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR capabilities);
-VkSwapchainKHR vse_swapchain_create(VseApp *app);
-VkImageView *vse_swapchain_create_image_views(VseApp app);
+void vse_swapchain_create(VseApp *app);
+void vse_swapchain_create_image_views(VseApp *app);
 void vse_swapchain_recreate(VseApp *vse_app);
 void vse_swapchain_destroy(VseApp *vse_app);
 
@@ -107,6 +108,7 @@ void vse_pipeline_create(VseApp *vse_app);
 void vse_renderpass_create(VseApp *vse_app);
 
 void vse_framebuffer_create(VseApp *vse_app);
+void vse_framebuffer_resize_callback(GLFWwindow *window, int width, int height);
 
 void vse_command_pool_create(VseApp *vse_app);
 void vse_command_buffer_create(VseApp *vse_app);

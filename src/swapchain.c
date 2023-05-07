@@ -84,7 +84,7 @@ VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabili
     return actual_extent;
 }
 
-VkSwapchainKHR vse_swapchain_create(VseApp *vse_app) {
+void vse_swapchain_create(VseApp *vse_app) {
     VseSwapchainSupportDetails swapchain_support_details;
     vse_swapchain_query_support(&swapchain_support_details, vse_app->vk_physical_device, vse_app->vk_surface);
 
@@ -141,21 +141,19 @@ VkSwapchainKHR vse_swapchain_create(VseApp *vse_app) {
     vse_app->swapchain_image_count = image_count;
     vse_app->swapchain_image_format = surface_format.format;
     vse_app->swapchain_extent = extent;
-
-    vse_info("Created swapchain.");
-    return swapchain;
+    vse_app->vk_swapchain = swapchain;
 }
 
-VkImageView *vse_swapchain_create_image_views(VseApp app) {
+void vse_swapchain_create_image_views(VseApp *vse_app) {
 
-    VkImageView *image_views = malloc(sizeof(VkImageView) * app.swapchain_image_count);
+    VkImageView *image_views = malloc(sizeof(VkImageView) * vse_app->swapchain_image_count);
 
-    for(uint32_t i = 0; i < app.swapchain_image_count; i++) {
+    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++) {
         VkImageViewCreateInfo create_info = {
             .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-            .image = app.swapchain_images[i],
+            .image = vse_app->swapchain_images[i],
             .viewType = VK_IMAGE_VIEW_TYPE_2D,
-            .format = app.swapchain_image_format,
+            .format = vse_app->swapchain_image_format,
             .components.r = VK_COMPONENT_SWIZZLE_IDENTITY,
             .components.g = VK_COMPONENT_SWIZZLE_IDENTITY,
             .components.b = VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -167,14 +165,14 @@ VkImageView *vse_swapchain_create_image_views(VseApp app) {
             .subresourceRange.layerCount = 1,
         };
 
-        VkResult create_image_view_result = vkCreateImageView(app.vk_device, &create_info, NULL, &image_views[i]);
+        VkResult create_image_view_result = vkCreateImageView(vse_app->vk_device, &create_info, NULL, &image_views[i]);
         if(create_image_view_result != VK_SUCCESS) {
             vse_err("Failed to create image view.");
         }
     }
 
     vse_info("Created image views.");
-    return image_views;
+    vse_app->swapchain_image_views = image_views;
 }
 
 void vse_swapchain_recreate(VseApp *vse_app) {
@@ -184,7 +182,7 @@ void vse_swapchain_recreate(VseApp *vse_app) {
     vse_swapchain_destroy(vse_app);
 
     vse_swapchain_create(vse_app);
-    vse_swapchain_create_image_views(*vse_app);
+    vse_swapchain_create_image_views(vse_app);
     vse_framebuffer_create(vse_app);
 }
 
