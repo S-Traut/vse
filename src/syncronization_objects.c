@@ -25,8 +25,7 @@ void vse_syncobj_create(VseApp *vse_app) {
         if(create_semaphore_image_result != VK_SUCCESS 
         || create_semaphore_render_result != VK_SUCCESS 
         || create_fence_result != VK_SUCCESS) {
-            vse_err("Failed to create semaphores.");
-            exit(EXIT_FAILURE);
+            vse_err_exit("Failed to create semaphores.");
         }
     }
 

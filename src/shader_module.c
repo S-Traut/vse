@@ -13,8 +13,7 @@ VkShaderModule vse_shadermod_create(VkDevice device, VseFile file) {
     VkShaderModule shader_module;
     VkResult create_shader_module_result = vkCreateShaderModule(device, &create_info, NULL, &shader_module);
     if(create_shader_module_result != VK_SUCCESS) {
-        vse_err("Failed to create shader module.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create shader module.");
     }
 
     return shader_module;

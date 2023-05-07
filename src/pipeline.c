@@ -150,8 +150,7 @@ void vse_pipeline_create(VseApp *vse_app) {
 
     VkResult create_pipeline_layout_result = vkCreatePipelineLayout(vse_app->vk_device, &pipeline_layout_info, NULL, &vse_app->pipeline_layout);
     if(create_pipeline_layout_result != VK_SUCCESS) {
-        vse_err("Failed to create pipeline layout.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create pipeline layout.");
     }
 
     VkGraphicsPipelineCreateInfo pipeline_info = {
@@ -175,8 +174,7 @@ void vse_pipeline_create(VseApp *vse_app) {
 
     VkResult create_graphics_pipeline_result = vkCreateGraphicsPipelines(vse_app->vk_device, VK_NULL_HANDLE, 1, &pipeline_info, NULL, &vse_app->pipeline);
     if(create_graphics_pipeline_result != VK_SUCCESS) {
-        vse_err("Failed to create pipeline.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create pipeline.");
     }
 
     vse_info("Created pipeline.");

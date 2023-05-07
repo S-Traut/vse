@@ -15,8 +15,7 @@ void vse_command_pool_create(VseApp *vse_app) {
 
     VkResult create_commandpool_result = vkCreateCommandPool(vse_app->vk_device, &pool_info, NULL, &vse_app->command_pool);
     if(create_commandpool_result != VK_SUCCESS) {
-        vse_err("Failed to create command pool.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create command pool.");
     }
 
     vse_info("Created command pool.");
@@ -36,8 +35,7 @@ void vse_command_buffer_create(VseApp *vse_app) {
 
     VkResult allocate_command_buffers_result = vkAllocateCommandBuffers(vse_app->vk_device, &allocate_info, command_buffers);
     if(allocate_command_buffers_result != VK_SUCCESS) {
-        vse_err("Failed to allocate command buffers.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to allocate command buffers.");
     }
 
     vse_app->command_buffers = command_buffers;
@@ -54,8 +52,7 @@ void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, u
 
     VkResult begin_command_buffer_result = vkBeginCommandBuffer(command_buffer, &begin_info);    
     if(begin_command_buffer_result != VK_SUCCESS) {
-        vse_err("Failed to begin recording command buffer.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to begin recording command buffer.");
     }
 
     VkRenderPassBeginInfo render_pass_info = {
@@ -95,7 +92,6 @@ void vse_command_buffer_record(VseApp vse_app, VkCommandBuffer command_buffer, u
     vkCmdEndRenderPass(command_buffer);
     VkResult end_command_buffer_result = vkEndCommandBuffer(command_buffer);
     if(end_command_buffer_result != VK_SUCCESS) {
-        vse_err("Failed to end command buffer.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to end command buffer.");
     }
 }

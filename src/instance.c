@@ -38,8 +38,7 @@ VkInstance vse_instance_create(VseAppConfig vse_app_config) {
 
     VkResult create_instance_result = vkCreateInstance(&create_info, NULL, &vk_instance);
     if(create_instance_result != VK_SUCCESS) {
-    	vse_err("An error occured while trying to create vkInstance");
-		exit(EXIT_FAILURE);
+    	vse_err_exit("An error occured while trying to create vkInstance");
     }
 
 	vse_info("Created Vulkan instance.");

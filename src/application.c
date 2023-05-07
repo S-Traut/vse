@@ -12,10 +12,9 @@ VseApp *vse_app_create(VseAppConfig vse_app_config)
 
     vse_window_create(vse_app_config, &vse_app);
     vse_app.vk_instance = vse_instance_create(vse_app_config);
+
     vse_surface_set(&vse_app);
-
     vse_logger_physical_devices(vse_app.vk_instance);
-
     vse_device_pick(&vse_app);
     vse_device_create(&vse_app);
     vse_swapchain_create(&vse_app);
@@ -49,8 +48,7 @@ void draw_frame(VseApp *vse_app) {
         vse_swapchain_recreate(vse_app);
         return;
     } else if(aquire_next_image_result != VK_SUCCESS && aquire_next_image_result != VK_SUBOPTIMAL_KHR) {
-        vse_err("Failed to acquire swapchain image.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to acquire swapchain image.");
     }
     
     vkResetFences(vse_app->vk_device, 1, &vse_app->fences_inflight[current_frame]);
@@ -76,8 +74,7 @@ void draw_frame(VseApp *vse_app) {
 
     VkResult queue_submit_result = vkQueueSubmit(vse_app->vk_graphics_queue, 1, &submit_info, vse_app->fences_inflight[current_frame]);
     if(queue_submit_result != VK_SUCCESS) {
-        vse_err("Failed to submit queue.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to submit queue.");
     }
 
     VkSwapchainKHR swapchains[] = { vse_app->vk_swapchain };
@@ -99,8 +96,7 @@ void draw_frame(VseApp *vse_app) {
         vse_app->framebuffer_resized = VK_FALSE;
         vse_swapchain_recreate(vse_app);
     } else if(queue_present_result != VK_SUCCESS) {
-        vse_err("Failed to present swapchain image.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to present swapchain image.");
     }
     
     vse_app->current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;

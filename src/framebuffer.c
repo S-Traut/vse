@@ -26,8 +26,7 @@ void vse_framebuffer_create(VseApp *vse_app) {
 
         VkResult create_framebuffer_result = vkCreateFramebuffer(vse_app->vk_device, &framebuffer_info, NULL, &p_framebuffers[i]);
         if(create_framebuffer_result != VK_SUCCESS) {
-            vse_err("Failed to create framebuffer.");
-            exit(EXIT_FAILURE);
+            vse_err_exit("Failed to create framebuffer.");
         }
     }
 

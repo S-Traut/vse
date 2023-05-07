@@ -130,8 +130,7 @@ void vse_swapchain_create(VseApp *vse_app) {
     VkSwapchainKHR swapchain;
     VkResult create_swapchain_result = vkCreateSwapchainKHR(vse_app->vk_device, &create_info, NULL, &swapchain);
     if(create_swapchain_result != VK_SUCCESS) {
-        vse_err("Failed to create swapchain.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create swapchain.");
     }
 
     vkGetSwapchainImagesKHR(vse_app->vk_device, swapchain, &image_count, NULL);
@@ -167,7 +166,7 @@ void vse_swapchain_create_image_views(VseApp *vse_app) {
 
         VkResult create_image_view_result = vkCreateImageView(vse_app->vk_device, &create_info, NULL, &image_views[i]);
         if(create_image_view_result != VK_SUCCESS) {
-            vse_err("Failed to create image view.");
+            vse_err_exit("Failed to create image view.");
         }
     }
 

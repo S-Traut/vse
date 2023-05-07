@@ -47,8 +47,7 @@ void vse_renderpass_create(VseApp *vse_app) {
 
     VkResult create_render_pass_result = vkCreateRenderPass(vse_app->vk_device, &render_pass_create_info, NULL, &vse_app->render_pass);
     if(create_render_pass_result != VK_SUCCESS) {
-        vse_err("Failed to create render pass.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create render pass.");
     }
 
     vse_info("Created render pass.");

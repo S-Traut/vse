@@ -129,7 +129,7 @@ void vse_logger_extensions();
 void vse_logger_physical_devices(VkInstance instance);
 void vse_info(const char* message);
 void vse_warn(const char* message);
-void vse_err(const char* message);
+void vse_err_exit(const char* format, ...);
 
 
 #endif

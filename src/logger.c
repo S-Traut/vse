@@ -1,4 +1,5 @@
 #include "vse.h"
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +15,16 @@ void vse_err(const char* message) {
 
 void vse_warn(const char* message) {
     printf("[W] %s\n", message);
+}
+
+void vse_err_exit(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    printf("[E] ");
+    vprintf(format, args);
+    printf("\n");
+    va_end(args);
+    exit(EXIT_FAILURE);
 }
 
 void vse_logger_extensions() {

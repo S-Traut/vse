@@ -14,8 +14,7 @@ void vse_device_pick(VseApp *vse_app) {
     vkEnumeratePhysicalDevices(vse_app->vk_instance, &devices_count, NULL);
 
     if(devices_count == 0) {
-        vse_err("No device supporting Vulkan found.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("No device supporting Vulkan found.");
     }
 
     VkPhysicalDevice *physical_devices = malloc(sizeof(VkPhysicalDevice) *devices_count);
@@ -28,9 +27,8 @@ void vse_device_pick(VseApp *vse_app) {
         }
 
         if(physical_device == VK_NULL_HANDLE) {
-            vse_err("No suitable device found.");
+            vse_err_exit("No suitable device found.");
             free(physical_devices);
-            exit(EXIT_FAILURE);
         }
     }
 
@@ -100,8 +98,7 @@ void vse_device_create(VseApp *vse_app) {
 
     VkResult create_device_result = vkCreateDevice(vse_app->vk_physical_device, &create_info, NULL, &device);
     if(create_device_result != VK_SUCCESS) {
-        vse_err("Failed to create logical device.");
-        exit(EXIT_FAILURE);
+        vse_err_exit("Failed to create logical device.");
     }
 
     vkGetDeviceQueue(device, indices.graphics_family.value, 0, &vse_app->vk_graphics_queue);
