@@ -99,6 +99,15 @@ void vse_app_run(VseAppConfig vse_app_config) {
 
 void vse_app_destroy(VseApp* vse_app)
 {
+    vse_swapchain_destroy(vse_app);
+    free(vse_app->frame_buffers);
+    free(vse_app->swapchain_image_views);
+    free(vse_app->swapchain_images);
+
+    vkDestroyPipeline(vse_app->vk_device, vse_app->pipeline, NULL);
+    vkDestroyPipelineLayout(vse_app->vk_device, vse_app->pipeline_layout, NULL);
+    vkDestroyRenderPass(vse_app->vk_device, vse_app->render_pass, NULL);
+
     for(uint32_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(vse_app->vk_device, vse_app->semaphores_image_available[i], NULL);
         vkDestroySemaphore(vse_app->vk_device, vse_app->semaphores_render_finished[i], NULL);
@@ -110,24 +119,11 @@ void vse_app_destroy(VseApp* vse_app)
     free(vse_app->command_buffers);
 
     vkDestroyCommandPool(vse_app->vk_device, vse_app->command_pool, NULL);
-    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++) {
-        vkDestroyFramebuffer(vse_app->vk_device, vse_app->frame_buffers[i], NULL);
-    }
-    free(vse_app->frame_buffers);
-
-    vkDestroyPipeline(vse_app->vk_device, vse_app->pipeline, NULL);
-    vkDestroyPipelineLayout(vse_app->vk_device, vse_app->pipeline_layout, NULL);
-    vkDestroyRenderPass(vse_app->vk_device, vse_app->render_pass, NULL);
-
-    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++)
-        vkDestroyImageView(vse_app->vk_device, vse_app->swapchain_image_views[i], NULL);
-    free(vse_app->swapchain_image_views);
-    
-    free(vse_app->swapchain_images);
-    vkDestroySwapchainKHR(vse_app->vk_device, vse_app->vk_swapchain, NULL);
     vkDestroyDevice(vse_app->vk_device, NULL);
+
     vkDestroySurfaceKHR(vse_app->vk_instance, vse_app->vk_surface, NULL);
     vkDestroyInstance(vse_app->vk_instance, NULL);
+
     glfwDestroyWindow(vse_app->window);
     glfwTerminate();
     free(vse_app);

@@ -176,3 +176,24 @@ VkImageView *vse_swapchain_create_image_views(VseApp app) {
     vse_info("Created image views.");
     return image_views;
 }
+
+void vse_swapchain_recreate(VseApp *vse_app) {
+
+    vkDeviceWaitIdle(vse_app->vk_device);
+
+    vse_swapchain_destroy(vse_app);
+
+    vse_swapchain_create(vse_app);
+    vse_swapchain_create_image_views(*vse_app);
+    vse_framebuffer_create(vse_app);
+}
+
+void vse_swapchain_destroy(VseApp *vse_app) {
+
+    for(uint32_t i = 0; i < vse_app->swapchain_image_count; i++) {
+        vkDestroyFramebuffer(vse_app->vk_device, vse_app->frame_buffers[i], NULL);
+        vkDestroyImageView(vse_app->vk_device, vse_app->swapchain_image_views[i], NULL);
+    }
+
+    vkDestroySwapchainKHR(vse_app->vk_device, vse_app->vk_swapchain, NULL);
+}

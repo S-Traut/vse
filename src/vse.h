@@ -99,6 +99,8 @@ VkPresentModeKHR vse_swapchain_pick_present_mode(VkPresentModeKHR *available_pre
 VkExtent2D vse_swapchain_pick_extent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR capabilities);
 VkSwapchainKHR vse_swapchain_create(VseApp *app);
 VkImageView *vse_swapchain_create_image_views(VseApp app);
+void vse_swapchain_recreate(VseApp *vse_app);
+void vse_swapchain_destroy(VseApp *vse_app);
 
 void vse_pipeline_create(VseApp *vse_app);
 
